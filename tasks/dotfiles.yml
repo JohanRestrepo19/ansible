@@ -14,8 +14,7 @@
         dest: "{{ lookup('env', 'HOME') }}/dotfiles"
         accept_hostkey: yes
 
-    # TODO: Use stow for specific files and not the whole Stow dir
     - name: Stow files
       ansible.builtin.shell:
         chdir: "{{ lookup('env', 'HOME') }}/dotfiles"
-        cmd: 'stow .'
+        cmd: "stow ."

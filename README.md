@@ -7,7 +7,7 @@
   - [x]  Zap (zsh plugin manager).
   - [x]  Cargo
       - [x] Eza
-  - [ ] Neovim dependencies.
+  - [x] Neovim dependencies.
   - [x] Node version managaer.
   - [-] Ruby version managaer.
   - [ ] Fzf
