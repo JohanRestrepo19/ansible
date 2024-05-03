@@ -31,3 +31,11 @@
     - name: Install cargo from script
       ansible.builtin.shell:
         cmd: '/tmp/sh.rustup.rs -y'
+
+- name: Install productivity tools
+  become: true
+  ansible.builtin.apt:
+    name: ["tmux", "fzf"]
+  tags:
+    - productivity
+    - install
