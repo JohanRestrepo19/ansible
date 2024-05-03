@@ -1,0 +1,22 @@
+- name: Setup Zsh
+  tags:
+    - dotfiles
+    - install
+    - zsh
+  block:
+    - name: Install zsh
+      ansible.builtin.apt:
+        name: zsh
+
+    - name: Change shell
+      ansible.builtin.shell: chsh -s `which zsh`
+
+    - name: Download zap installer
+      ansible.builtin.get_url:
+        url: https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh
+        dest: /tmp/zap-install.zsh
+        mode: '0700'
+        force: 'yes'
+
+    - name: Install Zap from script installer
+      ansible.builtin.shell: "zsh /tmp/zap-install.zsh --keep --branch release-v1"

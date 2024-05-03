@@ -1,0 +1,10 @@
+version: '3'
+services: 
+  ubuntu-computer:
+    image: new-computer
+    # command: sh -c "yarn install && yarn run dev"
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    working_dir: /usr/local/bin
+    volumes:
+      - ./:/usr/local/bin

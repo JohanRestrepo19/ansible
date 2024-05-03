@@ -1,0 +1,22 @@
+- name: Setup Neovim
+  tags:
+    - install
+    - neovim
+  vars:
+    neovim_dir: "{{ HOME }}/Desktop/tools/neovim"
+  block: 
+    - name: clone neovim git repo
+      ansible.builtin.git:
+        repo: https://github.com/neovim/neovim
+        dest: "{{ neovim_dir }}"
+
+    - name: build neovim
+      ansible.builtin.shell: |
+        cd {{ neovim_dir }}
+        git checkout stable
+        make CMAKE_BUILD_TYPE=Release
+
+    - name: install neovim
+      ansible.builtin.shell: |
+        cd {{ neovim_dir }}
+        make install

@@ -1,0 +1,28 @@
+- name: Fresh ubuntu machine
+  hosts: localhost
+  become: true
+  vars:
+    HOME: "{{  lookup('env', 'HOME') }}"
+    XDG_CONFIG_HOME: "{{ HOME }}/.config"
+    source_key: "./.ssh/id_ed25519"
+    dest_key: "{{ HOME }}/.ssh/id_ed25519"
+  pre_tasks:
+    - name: Update Cache
+      apt:
+        update_cache: true
+      changed_when: false
+  tasks:
+    - name: Ssh
+      import_tasks: tasks/ssh.yml
+    - name: Core
+      import_tasks: tasks/core-setup.yml
+    - name: Node
+      import_tasks: tasks/node.yml
+    - name: Dotfiles
+      import_tasks: tasks/dotfiles.yml
+    - name: Zsh
+      import_tasks: tasks/zsh.yml
+    - name: Neovim
+      import_tasks: tasks/neovim.yml
+    - name: Extras
+      import_tasks: tasks/extras.yml

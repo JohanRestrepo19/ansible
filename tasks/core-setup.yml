@@ -1,0 +1,33 @@
+- name: Setup neovim core dependencies
+  tags:
+    - core
+    - neovim
+    - install
+  block:
+    - name: Install system packages (Neovim Related)
+      ansible.builtin.apt:
+        name: ["ninja-build", "gettext", "cmake", "unzip", "build-essential"]
+
+    - name: Install system packages (Neovim Telescope Related)
+      ansible.builtin.apt:
+        name: ["fd-find", "ripgrep"]
+
+- name: Setup other core dependencies
+  tags:
+    - core
+    - install
+  block:
+    - name: Install system packages (extras)
+      ansible.builtin.apt:
+        name: ["curl", "htop"]
+
+    - name: Download cargo installer
+      ansible.builtin.get_url:
+        url: https://sh.rustup.rs
+        dest: /tmp/sh.rustup.rs
+        mode: '0700'
+        force: 'yes'
+
+    - name: Install cargo from script
+      ansible.builtin.shell:
+        cmd: '/tmp/sh.rustup.rs -y'

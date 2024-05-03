@@ -1,0 +1,21 @@
+- name: Setup dotfiles
+  tags:
+    - dotfiles
+    - install
+  block:
+    - name: Install stow
+      ansible.builtin.apt:
+        name: stow
+        state: 'present'
+
+    - name: Clone dotfiles repo
+      ansible.builtin.git:
+        repo: 'git@github.com:JohanRestrepo19/dotfiles.git'
+        dest: "{{ lookup('env', 'HOME') }}/dotfiles"
+        accept_hostkey: yes
+
+    # TODO: Use stow for specific files and not the whole Stow dir
+    - name: Stow files
+      ansible.builtin.shell:
+        chdir: "{{ lookup('env', 'HOME') }}/dotfiles"
+        cmd: 'stow .'

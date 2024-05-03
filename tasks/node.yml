@@ -1,0 +1,39 @@
+- name: Setup Node
+  become: yes
+  become_flags: -i # Execute config files such as .profile (Ansible uses non-interactive login shells)
+  become_user: root
+  tags:
+    - install
+    - node
+  vars:
+    node_version: "20.12.2"
+  block:
+    - name: explore vars
+      ansible.builtin.debug:
+        msg:
+          - "Home con lookup {{ lookup('env', 'HOME') }}"
+          - "Home con variable {{ HOME }}"
+          - "XDG_CONFIG_HOME con variable {{ XDG_CONFIG_HOME }}"
+          - "Node version  {{ node_version }}"
+
+    - name: Install nvm
+      ansible.builtin.shell: >
+        curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.39.7/install.sh | XDG_CONFIG_HOME={{ XDG_CONFIG_HOME }} bash
+      args:
+        executable: /bin/bash
+
+    - name: Install node
+      ansible.builtin.shell: |
+        source {{ XDG_CONFIG_HOME }}/nvm/nvm.sh
+        nvm install {{ node_version }}
+      args:
+        executable: /bin/bash
+
+    # NOTE: This is a kind of ugly solution to install npm global packages with nvm but it works
+    - name: Install npm global dependencies
+      ansible.builtin.shell: |
+        source {{ XDG_CONFIG_HOME }}/nvm/nvm.sh
+        nvm exec {{ node_version }} npm install -g ts-node neovim nodemon npkill
+      args:
+        executable: /bin/bash
+

@@ -1,0 +1,7 @@
+- name: Install "eza" Rust package
+  community.general.cargo:
+    executable: "{{ lookup('env', 'HOME') }}/.cargo/bin/cargo"
+    name: eza
+  tags:
+    - extras
+    - install
