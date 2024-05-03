@@ -24,5 +24,7 @@
       import_tasks: tasks/zsh.yml
     - name: Neovim
       import_tasks: tasks/neovim.yml
+    - name: Alacritty
+      import_tasks: tasks/alacritty.yml
     - name: Extras
       import_tasks: tasks/extras.yml

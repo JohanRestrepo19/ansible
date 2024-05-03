@@ -1,0 +1,60 @@
+- name: Setup Alacritty
+  tags:
+    - install
+    - terminal
+  vars:
+    alacritty_dir: "{{ HOME }}/Desktop/tools/alacritty"
+    rustup_bin: "{{ HOME }}/.cargo/bin/rustup"
+    cargo_bin: "{{ HOME }}/.cargo/bin/cargo"
+  block:
+    - name: install alacritty extra build libraries
+      become: true
+      ansible.builtin.apt:
+        name: [ "cmake", "pkg-config", "libfreetype6-dev", "libfontconfig1-dev", "libxcb-xfixes0-dev", "libxkbcommon-dev", "python3"]
+
+    - name: clone alacritty git repo
+      ansible.builtin.git:
+        repo: https://github.com/alacritty/alacritty.git
+        dest: "{{  alacritty_dir }}"
+
+    - name: Set right rust compiler
+      ansible.builtin.shell:
+        chdir: "{{ alacritty_dir }}"
+        cmd: |
+          {{ rustup_bin }} override set stable
+          {{ rustup_bin }} update stable
+
+    - name: build alacritty
+      ansible.builtin.shell:
+        chdir: "{{ alacritty_dir }}"
+        cmd: "{{ cargo_bin }} build --release"
+
+    - name: set alacritty terminfo
+      become: true
+      ansible.builtin.shell:
+        chdir: "{{ alacritty_dir }}"
+        cmd: "tic -xe alacritty,alacritty-direct extra/alacritty.info"
+
+    - name: set desktop entry
+      become: true
+      ansible.builtin.shell:
+        chdir: "{{ alacritty_dir }}"
+        cmd: |
+          cp target/release/alacritty /usr/local/bin
+          cp extra/logo/alacritty-term.svg /usr/share/pixmaps/Alacritty.svg
+
+    # NOTE: These two lines don't work on docker container. Need to be set on fresh machine.
+    # desktop-file-install extra/linux/Alacritty.desktop
+    # update-desktop-database
+
+    - name: set manual page
+      become: true
+      ansible.builtin.shell:
+        chdir: "{{ alacritty_dir }}"
+        cmd: |
+          mkdir -p /usr/local/share/man/man1
+          mkdir -p /usr/local/share/man/man5
+          scdoc < extra/man/alacritty.1.scd | gzip -c | tee /usr/local/share/man/man1/alacritty.1.gz > /dev/null
+          scdoc < extra/man/alacritty-msg.1.scd | gzip -c | tee /usr/local/share/man/man1/alacritty-msg.1.gz > /dev/null
+          scdoc < extra/man/alacritty.5.scd | gzip -c | tee /usr/local/share/man/man5/alacritty.5.gz > /dev/null
+          scdoc < extra/man/alacritty-bindings.5.scd | gzip -c | tee /usr/local/share/man/man5/alacritty-bindings.5.gz > /dev/null
